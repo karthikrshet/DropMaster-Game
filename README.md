@@ -1,4 +1,4 @@
-# 🎮 Fall Game
+# 🎮 DropMaster
 
 An **interactive falling‑platform survival game** built using **HTML, CSS, and JavaScript**, with **live scoring**, **touch controls for mobile**, **sound effects**, and a **stylish UI**.
 
@@ -27,7 +27,7 @@ An **interactive falling‑platform survival game** built using **HTML, CSS, and
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/karthikrshet/Fall-Game.git
+   git clone https://github.com/karthikrshet/DropMaster-Game.git
    ```
 2. Open `index.html` in a browser.
 3. **Move the red ball** left/right using:
