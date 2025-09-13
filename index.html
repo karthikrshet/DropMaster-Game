@@ -134,8 +134,9 @@
         let score = 0;
         let currentBlocks = [];
         let counter = 0;
-        let moving = 0;
-        let moveInterval;
+
+        let leftInterval = null;
+        let rightInterval = null;
 
         const moveSound = new Audio('https://www.soundjay.com/button/sounds/button-29.mp3');
         const gameOverSound = new Audio('https://www.soundjay.com/button/sounds/button-10.mp3');
@@ -154,35 +155,55 @@
             }
         }
 
-        document.addEventListener("keydown", event => {
-            if (moving === 0) {
-                moving++;
+        // Keyboard controls
+        document.addEventListener('keydown', event => {
+            if (event.key === "ArrowLeft" && !leftInterval) {
                 moveSound.play();
-                if (event.key === "ArrowLeft") {
-                    moveInterval = setInterval(moveLeft, 10);
-                } else if (event.key === "ArrowRight") {
-                    moveInterval = setInterval(moveRight, 10);
-                }
+                leftInterval = setInterval(moveLeft, 10);
+            }
+
+            if (event.key === "ArrowRight" && !rightInterval) {
+                moveSound.play();
+                rightInterval = setInterval(moveRight, 10);
             }
         });
 
-        document.addEventListener("keyup", () => {
-            clearInterval(moveInterval);
-            moving = 0;
+        document.addEventListener('keyup', event => {
+            if (event.key === "ArrowLeft") {
+                clearInterval(leftInterval);
+                leftInterval = null;
+            }
+
+            if (event.key === "ArrowRight") {
+                clearInterval(rightInterval);
+                rightInterval = null;
+            }
         });
 
+        // Touch controls
         leftBtn.addEventListener('touchstart', () => {
-            moveInterval = setInterval(moveLeft, 10);
-            moveSound.play();
+            if (!leftInterval) {
+                moveSound.play();
+                leftInterval = setInterval(moveLeft, 10);
+            }
+        });
+
+        leftBtn.addEventListener('touchend', () => {
+            clearInterval(leftInterval);
+            leftInterval = null;
         });
 
         rightBtn.addEventListener('touchstart', () => {
-            moveInterval = setInterval(moveRight, 10);
-            moveSound.play();
+            if (!rightInterval) {
+                moveSound.play();
+                rightInterval = setInterval(moveRight, 10);
+            }
         });
 
-        leftBtn.addEventListener('touchend', () => clearInterval(moveInterval));
-        rightBtn.addEventListener('touchend', () => clearInterval(moveInterval));
+        rightBtn.addEventListener('touchend', () => {
+            clearInterval(rightInterval);
+            rightInterval = null;
+        });
 
         setInterval(() => {
             let blockLast = document.getElementById("block" + (counter - 1));
@@ -213,9 +234,6 @@
                 currentBlocks.push(counter);
                 counter++;
             }
-
-            let characterRect = character.getBoundingClientRect();
-            let gameRect = game.getBoundingClientRect();
 
             let drop = 0;
 
@@ -263,6 +281,7 @@
             }
         }, 20);
     </script>
+
 </body>
 
 </html>
