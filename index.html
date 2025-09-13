@@ -1,10 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fall Game</title>
     <style>
-        * { padding: 0; margin: 0; box-sizing: border-box; font-family: "Montserrat", sans-serif; }
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Montserrat", sans-serif;
+        }
+
         body {
             background: linear-gradient(135deg, #74ABE2, #5563DE);
             display: flex;
@@ -12,59 +20,61 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            padding: 20px;
         }
+
         #score {
             font-size: 22px;
             color: #fff;
             font-weight: bold;
             margin: 15px 0;
-            text-shadow: 0 0 5px rgba(0,0,0,0.3);
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         }
+
         #game {
             width: 400px;
             height: 500px;
             border: 2px solid #222;
             border-radius: 8px;
-            margin: auto;
             overflow: hidden;
-            background: rgba(255,255,255,0.8);
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(10px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
             position: relative;
         }
+
         #character {
             width: 20px;
             height: 20px;
             background-color: red;
             border-radius: 50%;
-            position: relative;
-            top: 400px;
+            position: absolute;
+            top: 480px;
             left: 190px;
-            z-index: 1000000;
+            z-index: 1000;
         }
+
         .block {
             width: 400px;
             height: 20px;
             background-color: black;
-            position: relative;
-            top: 100px;
-            margin-top: -20px;
+            position: absolute;
         }
+
         .hole {
             width: 40px;
             height: 20px;
             background-color: white;
-            position: relative;
-            top: 100px;
-            margin-top: -20px;
+            position: absolute;
         }
-        /* Mobile control buttons */
+
         .controls {
             display: flex;
             justify-content: space-between;
             width: 200px;
             margin-top: 15px;
         }
+
         .btn {
             background: #ff7b54;
             padding: 15px 25px;
@@ -73,156 +83,186 @@
             color: white;
             font-size: 18px;
             cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             transition: background 0.3s;
         }
+
         .btn:active {
             background: #ff5722;
         }
+
         footer {
             margin-top: 20px;
             color: #fff;
             font-size: 18px;
             text-align: center;
         }
+
         footer strong {
             color: #ffdd57;
-            transition: color 0.3s;
             cursor: pointer;
-        }
-        footer strong:hover {
-            color: #fff;
         }
     </style>
 </head>
+
 <body>
+
     <h2 id="score">Score: 0</h2>
+
     <div id="game">
         <div id="character"></div>
     </div>
+
     <div class="controls">
         <button class="btn" id="leftBtn">◀</button>
         <button class="btn" id="rightBtn">▶</button>
     </div>
+
     <footer>
         Developed by <strong>Karthik Shet</strong>
     </footer>
 
-<script>
-    var character = document.getElementById("character");
-    var game = document.getElementById("game");
-    var scoreEl = document.getElementById("score");
-    var leftBtn = document.getElementById("leftBtn");
-    var rightBtn = document.getElementById("rightBtn");
-    var interval;
-    var both = 0;
-    var counter = 0;
-    var score = 0;
-    var currentBlocks = [];
+    <script>
+        const character = document.getElementById("character");
+        const game = document.getElementById("game");
+        const scoreEl = document.getElementById("score");
+        const leftBtn = document.getElementById("leftBtn");
+        const rightBtn = document.getElementById("rightBtn");
 
-    // Sounds
-    const moveSound = new Audio('https://www.soundjay.com/button/sounds/button-29.mp3');
-    const gameOverSound = new Audio('https://www.soundjay.com/button/sounds/button-10.mp3');
+        let characterLeft = 190;
+        let characterTop = 480;
+        let score = 0;
+        let currentBlocks = [];
+        let counter = 0;
+        let moving = 0;
+        let moveInterval;
 
-    function moveLeft(){
-        var left = parseInt(window.getComputedStyle(character).getPropertyValue("left"));
-        if(left>0){
-            character.style.left = left - 2 + "px";
-        }
-    }
-    function moveRight(){
-        var left = parseInt(window.getComputedStyle(character).getPropertyValue("left"));
-        if(left<380){
-            character.style.left = left + 2 + "px";
-        }
-    }
+        const moveSound = new Audio('https://www.soundjay.com/button/sounds/button-29.mp3');
+        const gameOverSound = new Audio('https://www.soundjay.com/button/sounds/button-10.mp3');
 
-    // Keyboard controls
-    document.addEventListener("keydown", event => {
-        if(both==0){
-            both++;
-            moveSound.play();
-            if(event.key==="ArrowLeft"){
-                interval = setInterval(moveLeft, 1);
-            }
-            if(event.key==="ArrowRight"){
-                interval = setInterval(moveRight, 1);
+        function moveLeft() {
+            if (characterLeft > 0) {
+                characterLeft -= 3;
+                character.style.left = characterLeft + "px";
             }
         }
-    });
-    document.addEventListener("keyup", event => {
-        clearInterval(interval);
-        both=0;
-    });
 
-    // Touch controls for mobile
-    leftBtn.addEventListener('touchstart', () => { interval = setInterval(moveLeft, 1); moveSound.play(); });
-    rightBtn.addEventListener('touchstart', () => { interval = setInterval(moveRight, 1); moveSound.play(); });
-    leftBtn.addEventListener('touchend', () => clearInterval(interval));
-    rightBtn.addEventListener('touchend', () => clearInterval(interval));
-
-    var blocks = setInterval(function(){
-        var blockLast = document.getElementById("block"+(counter-1));
-        var holeLast = document.getElementById("hole"+(counter-1));
-        if(counter>0){
-            var blockLastTop = parseInt(window.getComputedStyle(blockLast).getPropertyValue("top"));
-            var holeLastTop = parseInt(window.getComputedStyle(holeLast).getPropertyValue("top"));
-        }
-        if(blockLastTop<400||counter==0){
-            var block = document.createElement("div");
-            var hole = document.createElement("div");
-            block.setAttribute("class", "block");
-            hole.setAttribute("class", "hole");
-            block.setAttribute("id", "block"+counter);
-            hole.setAttribute("id", "hole"+counter);
-            block.style.top = (blockLastTop?blockLastTop:0) + 100 + "px";
-            hole.style.top = (holeLastTop?holeLastTop:0) + 100 + "px";
-            var random = Math.floor(Math.random() * 360);
-            hole.style.left = random + "px";
-            game.appendChild(block);
-            game.appendChild(hole);
-            currentBlocks.push(counter);
-            counter++;
-        }
-        var characterTop = parseInt(window.getComputedStyle(character).getPropertyValue("top"));
-        var characterLeft = parseInt(window.getComputedStyle(character).getPropertyValue("left"));
-        var drop = 0;
-        if(characterTop <= 0){
-            gameOverSound.play();
-            alert("Game over! Final Score: "+score);
-            clearInterval(blocks);
-            location.reload();
-        }
-        for(var i = 0; i < currentBlocks.length;i++){
-            let current = currentBlocks[i];
-            let iblock = document.getElementById("block"+current);
-            let ihole = document.getElementById("hole"+current);
-            let iblockTop = parseFloat(window.getComputedStyle(iblock).getPropertyValue("top"));
-            let iholeLeft = parseFloat(window.getComputedStyle(ihole).getPropertyValue("left"));
-            iblock.style.top = iblockTop - 0.5 + "px";
-            ihole.style.top = iblockTop - 0.5 + "px";
-            if(iblockTop < -20){
-                currentBlocks.shift();
-                iblock.remove();
-                ihole.remove();
-                score++; // Increase score
-                scoreEl.innerText = "Score: " + score;
+        function moveRight() {
+            if (characterLeft < 380) {
+                characterLeft += 3;
+                character.style.left = characterLeft + "px";
             }
-            if(iblockTop-20<characterTop && iblockTop>characterTop){
-                drop++;
-                if(iholeLeft<=characterLeft && iholeLeft+20>=characterLeft){
-                    drop = 0;
+        }
+
+        document.addEventListener("keydown", event => {
+            if (moving === 0) {
+                moving++;
+                moveSound.play();
+                if (event.key === "ArrowLeft") {
+                    moveInterval = setInterval(moveLeft, 10);
+                } else if (event.key === "ArrowRight") {
+                    moveInterval = setInterval(moveRight, 10);
                 }
             }
-        }
-        if(drop==0){
-            if(characterTop < 480){
-                character.style.top = characterTop + 2 + "px";
+        });
+
+        document.addEventListener("keyup", () => {
+            clearInterval(moveInterval);
+            moving = 0;
+        });
+
+        leftBtn.addEventListener('touchstart', () => {
+            moveInterval = setInterval(moveLeft, 10);
+            moveSound.play();
+        });
+
+        rightBtn.addEventListener('touchstart', () => {
+            moveInterval = setInterval(moveRight, 10);
+            moveSound.play();
+        });
+
+        leftBtn.addEventListener('touchend', () => clearInterval(moveInterval));
+        rightBtn.addEventListener('touchend', () => clearInterval(moveInterval));
+
+        setInterval(() => {
+            let blockLast = document.getElementById("block" + (counter - 1));
+            let holeLast = document.getElementById("hole" + (counter - 1));
+
+            let blockLastTop = blockLast ? parseInt(window.getComputedStyle(blockLast).getPropertyValue("top")) : 0;
+            let holeLastTop = holeLast ? parseInt(window.getComputedStyle(holeLast).getPropertyValue("top")) : 0;
+
+            if (blockLastTop < 400 || counter === 0) {
+                let block = document.createElement("div");
+                let hole = document.createElement("div");
+
+                block.className = "block";
+                hole.className = "hole";
+
+                block.setAttribute("id", "block" + counter);
+                hole.setAttribute("id", "hole" + counter);
+
+                block.style.top = (blockLastTop ? blockLastTop : 0) + 100 + "px";
+                hole.style.top = (holeLastTop ? holeLastTop : 0) + 100 + "px";
+
+                let randomHoleLeft = Math.floor(Math.random() * 360);
+                hole.style.left = randomHoleLeft + "px";
+
+                game.appendChild(block);
+                game.appendChild(hole);
+
+                currentBlocks.push(counter);
+                counter++;
             }
-        }else{
-            character.style.top = characterTop - 0.5 + "px";
-        }
-    },1);
-</script>
+
+            let characterRect = character.getBoundingClientRect();
+            let gameRect = game.getBoundingClientRect();
+
+            let drop = 0;
+
+            for (let i = 0; i < currentBlocks.length; i++) {
+                let current = currentBlocks[i];
+                let block = document.getElementById("block" + current);
+                let hole = document.getElementById("hole" + current);
+
+                let blockTop = parseFloat(window.getComputedStyle(block).getPropertyValue("top"));
+                let holeLeft = parseFloat(window.getComputedStyle(hole).getPropertyValue("left"));
+
+                block.style.top = blockTop - 1 + "px";
+                hole.style.top = blockTop - 1 + "px";
+
+                if (blockTop < -20) {
+                    block.remove();
+                    hole.remove();
+                    currentBlocks.shift();
+                    score++;
+                    scoreEl.innerText = "Score: " + score;
+                }
+
+                if (blockTop - 20 < characterTop && blockTop > characterTop) {
+                    drop++;
+                    if (holeLeft <= characterLeft && holeLeft + 40 >= characterLeft) {
+                        drop = 0;
+                    }
+                }
+            }
+
+            if (drop === 0) {
+                if (characterTop < 480) {
+                    characterTop += 2;
+                    character.style.top = characterTop + "px";
+                }
+            } else {
+                characterTop -= 1;
+                character.style.top = characterTop + "px";
+            }
+
+            if (characterTop <= 0) {
+                gameOverSound.play();
+                alert("Game Over! Final Score: " + score);
+                location.reload();
+            }
+        }, 20);
+    </script>
 </body>
+
 </html>
